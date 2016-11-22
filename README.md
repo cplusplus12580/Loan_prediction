@@ -27,15 +27,17 @@ memory usage: 62.4+ KB
 > - Gender: 性别。Male/Female
 > - Married: 婚否。Y/N
 > - Dependents: 受抚养者数量
-> - Education: Graduate（研究生）/ Under Graduate(本科生)
+> - Education: Graduate（大学毕业生，研究生）/ Under Graduate(本科生)
 > - Self_Employed: 个体经营者。Y/N
 > - ApplicationIncome: 收入
 > - CoapplicationIncome: 
-> - LoanAmount: 贷款额度
+> - LoanAmount: 贷款额度(千)
 > - Loan_Amount_Term: 贷款期限（月）
 > - Credit_History: credit history meets guidelines
 > - Property_area: 房产位置。Urban/Semi Urban/Rural
 > - Loan_status: 是否同意贷款。Y/N
+
+Partners in a transaction will use co-applicant status to share the responsibility of a loan as well as the benefits of ownership for the product purchased with the loan. Co-applicants legally agree to share the property and the responsibility for repayment of the loan
 
 ```python
 print train_df.isnull().sum()
@@ -150,3 +152,5 @@ train 和test合并
 df = pd.concat([train_df, test_df], axis=0)
 train_size = train_df.shape[0]
 ```
+
+Married一般和Dependents有关
