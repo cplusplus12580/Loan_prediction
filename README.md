@@ -33,7 +33,7 @@ memory usage: 62.4+ KB
 > - CoapplicationIncome: 
 > - LoanAmount: 贷款额度(千)
 > - Loan_Amount_Term: 贷款期限（月）
-> - Credit_History: credit history meets guidelines
+> - Credit_History: credit history meets guidelines.0和1
 > - Property_area: 房产位置。Urban/Semi Urban/Rural
 > - Loan_status: 是否同意贷款。Y/N
 
@@ -152,5 +152,34 @@ train 和test合并
 df = pd.concat([train_df, test_df], axis=0)
 train_size = train_df.shape[0]
 ```
+### Married
+```python
+print df[df.Married.isnull()][['Gender', 'Dependents','Self_Employed', 'Education', 'ApplicantIncome']]
+
+     Gender Dependents Self_Employed Education  ApplicantIncome
+104    Male        NaN            No  Graduate             3816
+228    Male        NaN            No  Graduate             4758
+435  Female        NaN            No  Graduate            10047
+```
+和结婚信息最息息相关的Dependents竟然也是NaN，吐血，只能根据其它的字段信息进行推断了
+
+```python
+sns.countplot(x='Married', hue='Gender', data=df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)])
+plt.show()
+```
+![](raw/figure_2.png?raw=true)
+
+```python
+sns.countplot(x='Married', hue='Gender', data=df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome < 5000)])
+plt.show()
+```
+![](raw/figure_3.png?raw=true)
+
+查看性别对贷款的影响
+```python
+sns.countplot(x='Gender', hue='Loan_Status', data = train_df)
+plt.show()
+```
+![](raw/figure_1.png?raw=true)
 
 Married一般和Dependents有关
