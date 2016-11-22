@@ -169,11 +169,30 @@ plt.show()
 ```
 ![](raw/figure_2.png?raw=true)
 
+从上图中可以看出,Female申请额度大于10000时，没结婚的偏多。
+```python
+facet = sns.FacetGrid(df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)], hue='Married', aspect=4)
+facet.map(sns.kdeplot, 'ApplicantIncome', shade=True)
+facet.set(xlim=(0, df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)]['ApplicantIncome'].max()))
+facet.add_legend()
+plt.show()
+```
+![](raw/figure_4.png?raw=true)
 ```python
 sns.countplot(x='Married', hue='Gender', data=df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome < 5000)])
 plt.show()
 ```
 ![](raw/figure_3.png?raw=true)
+
+```python
+facet = sns.FacetGrid(df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome < 5000)], hue='Married', aspect=4)
+facet.map(sns.kdeplot, 'ApplicantIncome', shade=True)
+facet.set(xlim=(0, df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 5000)]['ApplicantIncome'].max()))
+facet.add_legend()
+plt.show()
+```
+![](raw/figure_5.png?raw=true)
+
 
 查看性别对贷款的影响
 ```python
