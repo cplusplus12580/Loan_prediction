@@ -314,7 +314,7 @@ LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
           verbose=0, warm_start=False)
 ```
-模型测试正确率
+模型测试正确率还算可以。
 ```python
 print accuracy_score(y_train, clf_lgl.predict(X_train))
 
@@ -338,6 +338,21 @@ df.set_value(df.Gender.isnull(), 'Gender', y_predict)
 
 删除后面不用的变量
 ```python
-del df_for_gender, X, y, X_train, X_test, y_train, y_test, X_predict, y_predict, clf_lgl
+del df_for_gender, X, y, X_train, X_test, y_train, y_test, X_predict, y_predict, lg, clf_lgl
+```
+### Dependents
+```python
+sns.countplot(x='Dependents', hue ='Loan_Status', data=df)
+plt.title('count by Dependents and Loan_Status')
+plt.show()
+```
+![](raw/figure_11.png?raw=true)
+
+对Dependents进行类似的预测，但是正确率很低。
+```python
+df_for_dependents = df[['ApplicantIncome', 'Education', 'Gender', 'Married', 'Property_Area', 'Dependents']]
 ```
 
+![](raw/figure_12.png?raw=true)
+
+预测的准确率有点低
