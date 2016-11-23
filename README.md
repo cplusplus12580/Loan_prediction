@@ -389,3 +389,17 @@ SVC(C=35, cache_size=200, class_weight=None, coef0=0.1,
 0.852517985612
 ```
 ![](raw/figure_14.png?raw=true)
+
+
+### LoanAmount
+```python
+df['TotalIncome'] = df['ApplicantIncome'] + df['CoapplicantIncome']
+sns.FacetGrid(df, hue='Loan_Status', size=5).map(plt.scatter, 'TotalIncome','LoanAmount').add_legend()
+plt.title('LoanAmount and TotalIncome')
+plt.show()
+```
+![](raw/figure_15.png?raw=true)
+
+分布毫无规律可言。
+
+加上其它的字段信息进行线性回归。
