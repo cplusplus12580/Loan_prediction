@@ -356,3 +356,36 @@ df_for_dependents = df[['ApplicantIncome', 'Education', 'Gender', 'Married', 'Pr
 ![](raw/figure_12.png?raw=true)
 
 预测的准确率有点低
+
+### Credit_history
+```python
+LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)
+0.835182250396
+```
+
+![](raw/figure_13.png?raw=true)
+
+
+### Self_Employed
+```python
+from sklearn.svm import SVC
+svc = SVC(random_state=42, kernel='poly', probability=True)
+parameters = {'C': [35], 'gamma': [0.0055], 'coef0': [0.1],
+              'degree':[2]}
+clf_svc = get_model(svc, parameters, X_train, y_train, scoring)
+print (clf_svc)
+print (accuracy_score(y_test, clf_svc.predict(X_test)))
+plot_learning_curve(clf_svc, 'SVC for Self_Employed Precidtion', X, y, cv=4);
+plt.show()
+
+
+SVC(C=35, cache_size=200, class_weight=None, coef0=0.1,
+  decision_function_shape=None, degree=2, gamma=0.0055, kernel='poly',
+  max_iter=-1, probability=True, random_state=42, shrinking=True,
+  tol=0.001, verbose=False)
+0.852517985612
+```
+![](raw/figure_14.png?raw=true)
