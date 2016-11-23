@@ -164,35 +164,57 @@ print df[df.Married.isnull()][['Gender', 'Dependents','Self_Employed', 'Educatio
 和结婚信息最息息相关的Dependents竟然也是NaN，吐血，只能根据其它的字段信息进行推断了
 
 ```python
-sns.countplot(x='Married', hue='Gender', data=df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)])
-plt.show()
-```
-![](raw/figure_2.png?raw=true)
-
-从上图中可以看出,Female申请额度大于10000时，没结婚的偏多。
-```python
-facet = sns.FacetGrid(df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)], hue='Married', aspect=4)
+facet = sns.FacetGrid(df[(df.Self_Employed == 'No') & (df.Gender=='Female') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)], hue='Married', aspect=4)
 facet.map(sns.kdeplot, 'ApplicantIncome', shade=True)
-facet.set(xlim=(0, df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)]['ApplicantIncome'].max()))
+facet.set(xlim=(10000, df[(df.Self_Employed == 'No') & (df.Gender=='Female') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)]['ApplicantIncome'].max()))
 facet.add_legend()
+plt.title('Female and Income > 10000')
 plt.show()
 ```
 ![](raw/figure_4.png?raw=true)
+
+从上图来看，女性申请者，收入略多于10000的非常有可能是未婚的。
+
 ```python
-sns.countplot(x='Married', hue='Gender', data=df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome < 5000)])
+sns.countplot(x='Married', hue='Gender', data=df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 10000)])
+plt.title('Income > 10000')
 plt.show()
 ```
 ![](raw/figure_3.png?raw=true)
 
+从上图中可以看出,Female申请额度大于10000时，没结婚的偏多。
+
+综合以上两点，该女性很可能是未婚的。
+
 ```python
 facet = sns.FacetGrid(df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome < 5000)], hue='Married', aspect=4)
 facet.map(sns.kdeplot, 'ApplicantIncome', shade=True)
-facet.set(xlim=(0, df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome > 5000)]['ApplicantIncome'].max()))
+facet.set(xlim=(0, df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome < 5000)]['ApplicantIncome'].max()))
 facet.add_legend()
 plt.show()
 ```
 ![](raw/figure_5.png?raw=true)
 
+Male申请者，未婚和已婚的收入分布基本一致。
+
+```python
+sns.countplot(x='Married', hue='Gender', data=df[(df.Self_Employed == 'No') & (df.Education == 'Graduate') & (df.ApplicantIncome < 5000)])
+plt.title('Income < 5000')
+plt.show()
+```
+![](raw/figure_2.png?raw=true)
+
+但是从统计上来看，已婚的男士较多。
+
+综上两点，该两位男性很有可能是已婚的。
+
+所以：
+```python
+_ = df.set_value((df.ApplicantIncome > 10000) & (df.Married.isnull()), 'Married', 'No')
+_ = df.set_value((df.ApplicantIncome < 5000) & (df.Married.isnull()), 'Married', 'Yes')
+```
+
+### Gender
 
 查看性别对贷款的影响
 ```python
@@ -201,4 +223,121 @@ plt.show()
 ```
 ![](raw/figure_1.png?raw=true)
 
-Married一般和Dependents有关
+产看Gender缺失值的其它特征：
+```python
+print df[df.Gender.isnull()][['Self_Employed', 'ApplicantIncome']]
+
+    Self_Employed  ApplicantIncome
+23             No             3365
+126            No            23803
+171            No            51763
+188           Yes              674
+314            No             2473
+334           Yes             9833
+460           Yes             2083
+467            No            16692
+477            No             2873
+507            No             3583
+576            No             3087
+588            No             4750
+592           Yes             9357
+22             No             3909
+51             No             3500
+106            No             1596
+138            No             3333
+209            No             2038
+231           Yes             2860
+245            No             3186
+279            No            29167
+296            No             6478
+303           Yes              570
+318            No             4768
+```
+
+```python
+sns.boxplot(x='Gender', y='ApplicantIncome', hue='Self_Employed', data=df)
+plt.axhline(y='5000', color='red')
+plt.axhline(y='10000', color='green')
+plt.show()
+```
+![](raw/figure_9.png?raw=true)
+
+对Gender进行预测。
+
+选择相关的不含缺失值的字段用于预测。
+```python
+df_for_gender = df[['Gender', 'Married', 'Property_Area', 'Education', 'ApplicantIncome']]
+```
+
+对ApplicantIncome字段进行缩放处理
+```python
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+df_for_gender['Norm_Income'] = pd.Series(scaler.fit_transform(df_for_gender['ApplicantIncome'].reshape(-1,1)).reshape(-1), index=df_for_gender.index)
+df_for_gender.drop('ApplicantIncome', axis=1, inplace=True)
+```
+
+对类别型变量进行dummies处理
+```python
+df_for_gender = pd.get_dummies(df_for_gender, columns=['Married', 'Property_Area', 'Education'])
+```
+
+经过上面的步骤，用于预测Gender的数据集如下：
+```python
+print df_for_gender.info()
+
+Data columns (total 9 columns):
+Gender                     957 non-null object
+Norm_Income                981 non-null float64
+Married_No                 981 non-null float64
+Married_Yes                981 non-null float64
+Property_Area_Rural        981 non-null float64
+Property_Area_Semiurban    981 non-null float64
+Property_Area_Urban        981 non-null float64
+Education_Graduate         981 non-null float64
+Education_Not Graduate     981 non-null float64
+dtypes: float64(8), object(1)
+memory usage: 76.6+ KB
+```
+
+训练逻辑回归模型
+
+```python
+from sklearn.linear_model import LogisticRegression
+lg = LogisticRegression()
+parameters={'C': [0.5]}
+clf_lgl = get_model(lg, parameters, X_train, y_train, scoring)
+print clf_lgl
+
+LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)
+```
+模型测试正确率
+```python
+print accuracy_score(y_train, clf_lgl.predict(X_train))
+
+0.811659192825
+```
+
+CV检验：
+```python
+plot_learning_curve(clf_lgl, 'Logistic Regression', X, y, cv=4)
+plt.show()
+```
+![](raw/figure_10.png?raw=true)
+
+模型正常。
+
+对缺失值进行预测，并替换缺失值
+```python
+y_predict = clf_lgl.predict(X_predict)
+df.set_value(df.Gender.isnull(), 'Gender', y_predict)
+```
+
+删除后面不用的变量
+```python
+del df_for_gender, X, y, X_train, X_test, y_train, y_test, X_predict, y_predict, clf_lgl
+```
+
