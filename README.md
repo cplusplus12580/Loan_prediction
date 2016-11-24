@@ -403,3 +403,103 @@ plt.show()
 分布毫无规律可言。
 
 加上其它的字段信息进行线性回归。
+
+先采用随机值处理
+
+### Loan_Amount_Term
+```python
+df['Total_Income'] = df['ApplicantIncome'] + df['CoapplicantIncome']
+
+print df[df.Loan_Amount_Term.isnull()][['LoanAmount', 'Total_Income']]
+
+     LoanAmount  Total_Income
+19        115.0        6100.0
+36        100.0        3158.0
+44         96.0        4695.0
+45         88.0        3410.0
+73         95.0        4755.0
+112       152.0        7686.0
+165       182.0        6873.0
+197       120.0        4272.0
+223       175.0        8588.0
+232       120.0        5787.0
+335        70.0        9993.0
+367       124.0        5124.0
+421        80.0        2720.0
+423       110.0        8917.0
+45        185.0        8160.0
+48        187.0       10130.0
+117        80.0        4416.0
+129        70.0        5409.0
+184       150.0       10916.0
+214       118.0        7473.0
+```
+
+```python
+print df['Loan_Amount_Term'].value_counts()
+
+360.0    823
+180.0     66
+480.0     23
+300.0     20
+240.0      8
+84.0       7
+120.0      4
+60.0       3
+36.0       3
+12.0       2
+350.0      1
+6.0        1
+```
+银行贷款时间一般都是一些固定的。
+```python
+sns.countplot(x='Loan_Amount_Term', hue='Loan_Status', data=df)
+plt.show()
+```
+![](raw/figure_16.png?raw=true)
+
+```python
+
+LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)
+0.830508474576
+```
+![](raw/figure_17.png?raw=true)
+
+到这里数据集基本完成了缺失值的替换。
+
+```python
+print df.info()
+
+Int64Index: 981 entries, 0 to 366
+Data columns (total 14 columns):
+ApplicantIncome      981 non-null int64
+CoapplicantIncome    981 non-null float64
+Credit_History       981 non-null float64
+Dependents           981 non-null object
+Education            981 non-null object
+Gender               981 non-null object
+LoanAmount           981 non-null float64
+Loan_Amount_Term     981 non-null object
+Loan_ID              981 non-null object
+Loan_Status          614 non-null object
+Married              981 non-null object
+Property_Area        981 non-null object
+Self_Employed        981 non-null object
+Total_Income         981 non-null float64
+dtypes: float64(4), int64(1), object(9)
+memory usage: 115.0+ KB
+```
+
+逻辑回归模型：
+
+```python
+LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)
+0.789189189189
+```
+![](raw/figure_18.png?raw=true)
