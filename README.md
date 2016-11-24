@@ -503,3 +503,31 @@ LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
 0.789189189189
 ```
 ![](raw/figure_18.png?raw=true)
+
+```python
+RandomForestClassifier(bootstrap=True, class_weight=None, criterion='entropy',
+            max_depth=None, max_features='auto', max_leaf_nodes=None,
+            min_samples_leaf=12, min_samples_split=5,
+            min_weight_fraction_leaf=0.0, n_estimators=500, n_jobs=1,
+            oob_score=True, random_state=42, verbose=0, warm_start=False)
+```
+
+## Ensemble
+
+```python
+from sklearn.ensemble import VotingClassifier
+clf_vc = VotingClassifier(estimators=[('lgl', clf_lgl), ('rfc1', clf_rfc1)], 
+                          voting='hard', weights=[1,1])
+clf_vc = clf_vc.fit(X_train, y_train)
+
+print (accuracy_score(y_test, clf_vc.predict(X_test)))
+print (clf_vc)
+
+0.789189189189
+VotingClassifier(estimators=[('lgl', LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
+          verbose=0, warm_start=False)), ('rfc1', Rand...stimators=500, n_jobs=1,
+            oob_score=True, random_state=42, verbose=0, warm_start=False))],
+         voting='hard', weights=[2, 1])
+```
